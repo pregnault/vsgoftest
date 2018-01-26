@@ -1,0 +1,13 @@
+bibentry(bibtype = "Article",
+  title        ="Goodness-of-fit tests based on Kullkack-Leibler information: package {vsgoftest} for {R}",
+  author       = c(person("Justine", "Lequesne"),
+                   person("Philippe", "Regnault")),
+  journal      = "Blabla",
+  year         = "2018",
+  url          = "http://arxiv.org/",
+  textVersion  =
+  paste("Justine Lequesne, Philippe Regnault (2018).",
+        "Goodness-of-fit tests based on Kullkack-Leibler information: package vsgoftest for R",
+        "URL http://arxiv.org/.")
+)
+
