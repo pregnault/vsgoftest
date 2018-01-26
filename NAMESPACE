@@ -1,4 +1,4 @@
-import("fitdistrplus","smoothmest")
+import("fitdistrplus")
 importFrom("stats", "density", "dexp", "df", "dgamma", "dnorm",
              "dweibull", "pnorm", "rexp", "rf", "rgamma", "rnorm",
              "runif", "rweibull", "var","dbeta","dunif","rbeta","dlnorm","rlnorm")

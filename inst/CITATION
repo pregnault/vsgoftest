@@ -1,13 +1,13 @@
 bibentry(bibtype = "Article",
-  title        ="Goodness-of-fit tests based on Kullkack-Leibler information: package {vsgoftest} for {R}",
+  title        ="Package vsgoftest for {R}: goodness-of-fit tests based on Kullback-Leibler divergence",
   author       = c(person("Justine", "Lequesne"),
                    person("Philippe", "Regnault")),
-  journal      = "Blabla",
+  journal      = "",
   year         = "2018",
   url          = "http://arxiv.org/",
   textVersion  =
   paste("Justine Lequesne, Philippe Regnault (2018).",
-        "Goodness-of-fit tests based on Kullkack-Leibler information: package vsgoftest for R",
+        "Package vsgoftest for {R}: goodness-of-fit tests based on Kullback-Leibler divergence",
         "URL http://arxiv.org/.")
 )
 

@@ -2,7 +2,7 @@
 \alias{vs.test}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Vasicek-Song goodness-of-fit test for various distributions}
-\description{Performs Vasicek-Song goodness-of-fit test to the specified maximum entropy distribution family.
+\description{Performs Vasicek-Song goodness-of-fit test to the specified distribution family.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
@@ -15,7 +15,7 @@ vs.test(x, densfun, param = NULL,
   \item{x}{(\code{numeric, vector}) the numeric sample.}
   \item{densfun}{A character string specifying the fitted distribution. Possible values are \code{"dunif"}, \code{"dnorm"}, \code{"dlnorm"}, \code{"dexp"}, \code{"dgamma"}, \code{"dweibull"}, \code{"dpareto"}, \code{"df"}, \code{"dlaplace"} and \code{"dbeta"}.}
   \item{param}{(\code{numeric, vector}) specifies the parameter(s) of the fitted distribution. If \code{NULL} (default), a GOF test to the parametric family of distributions specified by densfun is performed.}
-  \item{simulate.p.value}{(\code{logical, single value}) if \code{TRUE}, the p-value of the sample is estimated by means of Monte Carlo methods. If \code{NULL} (the default), the p-value is simulated if the sample size is at most 100; otherwise, an asymptotic p-value is computed.}
+  \item{simulate.p.value}{(\code{logical, single value}) if \code{TRUE}, the p-value of the sample is estimated by means of Monte Carlo methods. If \code{NULL} (the default), the p-value is simulated if the sample size is smaller than 80; otherwise, an asymptotic p-value is computed.}
   \item{B}{(\code{numeric, single value}) a numeric value specifying the number of simulations to perform in Monte-Carlo estimation of the p-value.}
   \item{delta}{(\code{numeric, single value}) a numeric value smaller than \eqn{1/3} specifying the upper bound \eqn{n^{1/3}-\delta} for window size, where \eqn{n} is the sample size. The default depends on \code{densfun}; see Vignettes for details.}
   \item{extend}{(\code{logical, single value}). If \code{FALSE} (the default), the bound  for the window is \eqn{n^{1/3}-\delta}; if \code{TRUE}, the bound is \eqn{n/2}.}
@@ -47,7 +47,7 @@ Song, K. S., Goodness-of-fit tests based on Kullback-Leibler discrimination info
 
 Girardin, V., Lequesne, J. Entropy-based goodness-of-fit tests - a unifying framework. Application to DNA replication. \emph{Communications in Statistics: Theory and Methods,} \bold{} (2017). 
 
-Lequesne, J., Regnault, P. Goodness-of-fit tests based on entropy: Package vsgoftest. \emph{Arxiv:} (2018).
+Lequesne, J., Regnault, P. Package vsgoftest for R: goodness-of-fit tests based on Kullback-Leibler divergence. \emph{Arxiv:} (2018).
 
 }
 \author{

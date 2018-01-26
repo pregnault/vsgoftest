@@ -154,7 +154,7 @@ entropy.estimate <- function(x,window){
 #### Vasicek-Song GOF tests ####
 
 ## vs.test (function) : performs Vasicek-Song test
-vs.test <- function(x,densfun,param=NULL, simulate.p.value=NULL, B=5000, delta = NULL, extend = FALSE, relax = FALSE){
+vs.test <- function(x, densfun, param = NULL, simulate.p.value = NULL, B = 5000, delta = NULL, extend = FALSE, relax = FALSE){
   ### CHECKING FOR ARGUMENT VALIDITY
   #densfun
   if(missing(densfun) | !is.character(densfun))
@@ -224,7 +224,7 @@ vs.test <- function(x,densfun,param=NULL, simulate.p.value=NULL, B=5000, delta =
     simulate.p.value=NULL
   }
   if (is.null(simulate.p.value)){
-    if (n <=100) {simulate.p.value=TRUE} else {simulate.p.value=FALSE}
+    if (n < 80) {simulate.p.value=TRUE} else {simulate.p.value=FALSE}
     }
   #B
   if (!is.numeric(B) | !(length(B)==1) | B<=0) {stop("B must be a positive integer")} 
@@ -233,7 +233,11 @@ vs.test <- function(x,densfun,param=NULL, simulate.p.value=NULL, B=5000, delta =
     B <- ceiling(B)
   } #Converts B into an integer
   #delta
-  if (!is.null(delta) & (!(is.numeric(delta)) | !(length(delta)==1) ) ) {
+  if (!is.null(delta) & (!(is.numeric(delta)) | !(length(delta)==1)) ) {
+    warning('Argument delta must be a numeric value. Reset to default value.')
+    delta <- NULL
+  }
+  if (!is.null(delta) & (delta >= 1/3)) {
     warning('Argument delta must be a numeric value. Reset to default value.')
     delta <- NULL
   }

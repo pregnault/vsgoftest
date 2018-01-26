@@ -27,7 +27,7 @@ Song, K. S., Goodness-of-fit tests based on Kullback-Leibler discrimination info
 
 Girardin, V., Lequesne, J. Entropy-based goodness-of-fit tests - a unifying framework. Application to DNA replication. \emph{Accepted in Communications in Statistics: Theory and Methods} (2017). 
 
-Lequesne, J., Regnault, P. Goodness-of-fit tests based on entropy: Package maxentgoftest. \emph{Preprint a completer} (2017).
+Lequesne, J., Regnault, P. Package vsgoftest for R: goodness-of-fit tests based on Kullback-Leibler divergence. \emph{arxiv:} (2018).
 
 }
 \keyword{ package }

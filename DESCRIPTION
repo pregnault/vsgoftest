@@ -1,15 +1,17 @@
 Package: vsgoftest
 Type: Package
-Title: Performing Goodness-of-Fit Tests of Maximum Entropy Distributions
+Title: Goodness-of-Fit Tests based on Kullback-Leibler divergence
 Version: 0.3-0
 Date: 2017-12-21
 Author: Justine Lequesne [aut, cre], Philippe Regnault [aut]
 Maintainer: Justine Lequesne <justine.lequesne@unicaen.fr>
 Description: Several functions are provided to:
   1) estimate differential Shannon entropy i.e., estimate Shannon entropy of real random variables whose distribution is dominated by the Lebesgue measure;
-  2) test the goodness-of-fit of a vector of real numbers (a sample) to some Maximum Entropy distributions, including uniform, Gaussian, log-normal, exponential, Gamma, Weibull, Pareto, Fisher, Laplace and beta distributions. 
-Depends: stats, fitdistrplus, smoothmest
+  2) test the goodness-of-fit of a vector of real numbers (a sample) to some prescibed family of distributions, including uniform, Gaussian, log-normal, exponential, Gamma, Weibull, Pareto, Fisher, Laplace and beta distributions. 
+Depends: stats, fitdistrplus
 Imports: Rcpp (>= 0.12.1)
+Suggests: knitr
+VignetteBuilder: knitr
 LinkingTo: Rcpp
 Encoding: UTF-8
 License: GPL (>=2)
