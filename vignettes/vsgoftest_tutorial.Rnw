@@ -68,7 +68,7 @@ knitr::opts_chunk$set(comment = '')
 
 <<echo = TRUE, eval = FALSE>>=
 #Package devtools must be installed
-devtools::install_github('pregnault/vsgoftest', dependencies = TRUE)
+devtools::install_github('pregnault/vsgoftest')
 @
 
 The package is structured around two functions, \verb+entropy.estimate+ and \verb+vs.test+. While the first one aims at computing Vasicek estimator
