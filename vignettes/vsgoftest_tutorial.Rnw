@@ -68,7 +68,7 @@ knitr::opts_chunk$set(comment = '')
 
 <<echo = TRUE, eval = FALSE>>=
 #Package devtools must be installed
-devtools::install_github('vsgoftest', dependencies = TRUE)
+devtools::install_github('pregnault/vsgoftest', dependencies = TRUE)
 @
 
 The package is structured around two functions, \verb+entropy.estimate+ and \verb+vs.test+. While the first one aims at computing Vasicek estimator
@@ -212,15 +212,20 @@ vs.test(x = samp, densfun = "dlnorm", extend = TRUE)
 Second, enlarging the range for $m$  is also interesting when the sample size is moderate, especially if ties are present. Indeed, the presence of ties is particularly non-appropriate for performing VS tests: if ties are present, it may happen that some spacings $X_{(i+m)} - X_{(i-m)}$ vanish and hence Vasicek estimate is not well-defined. From a computational view point, it requires the window size $m$ to be greater than the maximal number of ties in the sample. Hence, if the upper-bound $n^{1/3-\delta}$ is less than the maximal number of ties, the test statistic can not be computed. 
 Turning \verb+extend+ to \verb+TRUE+ may avoid this behaviour, as illustrated below.
 
+{
+  \raggedright
 <<echo = TRUE, eval = TRUE, error = TRUE>>=
 samp <- c(samp, rep(4,3)) #add ties in the previous sample
 vs.test(x = samp, densfun = "dexp")
 @
+}
 
+{
+  \raggedright
 <<>>=
 vs.test(x = samp, densfun = "dexp", extend = TRUE)
 @
-
+}
 Finally, it may happen that for all $m$ between $1$ and $n^{1/3-\delta}$, Vasicek's estimate $V_{mn}$ exceeds the parametric estimate of the entropy of the null distribution, hence no window size exists satisfying~(\ref{arteqm}), as illustrated below.
 
 <<echo = TRUE, eval = FALSE>>=
@@ -241,11 +246,14 @@ By turning \verb+extend+ to \verb+TRUE+, the possible values for the window size
 
 Note that when estimating the p-value by Monte-Carlo methods, it may happen that for some replicates, the constraint~(\ref{PKGEqnConstraint}) is not satisfied whatever be the window size. These replicates are then ignored and the p-value is computed from remaining replicates. A warning message is added to the output, informing the user on the number of ignored replicates.
 
+{
+  \raggedright
 <<>>=
 data(contaminants) #load data from package vsgoftest; see ?contaminants
 set.seed(1)
 vs.test(x = aluminium2, densfun = 'dpareto')
 @
+}
 
 A large proportion of such ignored replicates may indicate that the original sample is too small or obviously does not fit the null distribution.
 

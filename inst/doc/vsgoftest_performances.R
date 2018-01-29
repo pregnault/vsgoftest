@@ -109,8 +109,8 @@ for (i in seq_along(lstn)) {
   powers1[i,] <- apply(res.pow < 0.05, 1, mean)
 }
 
-#Pareto with c = 1, mu = 1/2 against shifted log-normal with meanlog = 0, sdlog = 2
-mu <- 1/2
+#Pareto with c = 1, mu = 0.8 against shifted log-normal with meanlog = 0, sdlog = 1.25
+mu <- 4/5
 powers2 <- matrix(0, nrow = 4, ncol = length(lstn))
 set.seed(32)
 for (i in seq_along(lstn)) {

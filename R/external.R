@@ -237,9 +237,11 @@ vs.test <- function(x, densfun, param = NULL, simulate.p.value = NULL, B = 5000,
     warning('Argument delta must be a numeric value. Reset to default value.')
     delta <- NULL
   }
-  if (!is.null(delta) & (delta >= 1/3)) {
-    warning('Argument delta must be a numeric value. Reset to default value.')
-    delta <- NULL
+  if (is.numeric(delta)) {
+    if (delta >= 1/3){
+      warning('Argument delta must be a numeric value. Reset to default value.')
+      delta <- NULL
+    }
   }
   #extend
   if (!is.logical(extend) | ! length(extend) == 1){

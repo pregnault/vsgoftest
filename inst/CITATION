@@ -2,7 +2,7 @@ bibentry(bibtype = "Article",
   title        ="Package vsgoftest for {R}: goodness-of-fit tests based on Kullback-Leibler divergence",
   author       = c(person("Justine", "Lequesne"),
                    person("Philippe", "Regnault")),
-  journal      = "",
+  journal      = "Arxiv preprint",
   year         = "2018",
   url          = "http://arxiv.org/",
   textVersion  =
