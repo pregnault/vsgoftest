@@ -71,7 +71,7 @@ vs.estimate <- function(x,densfun = NULL, param, extend, delta, relax, suppress.
     res <- V[V< -mean(log(likelihood(x, densfun, param)))] #Keep only estimates smaller than empirical log-likelihood
   }
   if (length(res)==0 & !suppress.error) {
-    stop("Sample entropy is greater than empirical maximal entropy for all possible window sizes; this suggests that the sample is too small or is unlikely to be drawn according to the null distribution.")
+    stop("The sample entropy is greater than empirical maximal entropy for all possible window sizes; the sample may be too small or is unlikely to be drawn from the null distribution.")
   } else{}
   if (length(res)==0 & suppress.error) {
     Vopt <- NA

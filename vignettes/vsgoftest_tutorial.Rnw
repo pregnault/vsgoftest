@@ -20,6 +20,7 @@
 \def\firstMarker{$^*$}
 \def\secondMarker{$\dagger$}
 
+\def\code{\texttt}
 \def\pkg{\textbf}
 \def\proglang{\textsf}
 
@@ -57,40 +58,41 @@ Laboratoire de Math{\'e}matiques de Reims, FRE 2011, Université de Reims Champa
 
 
 
-The package \pkg{vsgoftest} provides functions to estimate Shannon entropy of continuous random variables and to test the goodness-of-fit of a vector of real numbers to some prescribed family of distributions. As a by-product, it also provides functions to compute the density, cumulative density and quantile functions of Pareto and Laplace distributions, as well as to generate samples from Pareto and Laplace distributions. 
+The \pkg{vsgoftest} package provides functions for estimating Shannon entropy of absolutely continuous distributions and testing the goodness-of-fit of some theoretical family of distributions to a vector of real numbers. It also provides functions for computing the density, cumulative density and quantile functions of Pareto and Laplace distributions, as well as for generating samples from these distributions. 
 
-The latest (under development) version of the package \pkg{vsgoftest} is available and can be installed in \proglang{R} from the github repository of the project as follows:
-
+The \pkg{vsgoftest} package is available on CRAN mirrors and can be installed by executing the command
 <<echo = FALSE>>=
 knitr::opts_chunk$set(comment = '')
 @
 
+<<eval = FALSE>>=
+install.packages('vsgoftest')
+@
+
+Alternatively, the latest (under development) version of the \pkg{vsgoftest} package is also available and can be installed in \proglang{R} from the github repository of the project as follows:
 
 <<echo = TRUE, eval = FALSE>>=
 #Package devtools must be installed
 devtools::install_github('pregnault/vsgoftest')
 @
 
-The package is structured around two functions, \verb+entropy.estimate+ and \verb+vs.test+. While the first one aims at computing Vasicek estimator
-of the differential entropy $\SSS(P) = -\int p(x) \log p(x) \der x$ of a distribution $P$ on $\R$ with density $p$ from a numeric sample $X_1, \dots, X_n$ drawn from $P$, the second one performs Vasicek-Song Goodness-of-fit test to usual parametric families of distributions. A comprehensive presentation of their usage is proposed in Sections~\ref{MEGOFPSecEntEst} and~\ref{MEGOFPSecVSTest}, with numerous examples. An application to environmental data is presented in Section~\ref{TutoAppliData}.
-
-Details about entropy estimation, Vasicek-Song goodness-of-fit tests and the contents and features of the package are available in the listed references at the end of the present document. Particularly, see~\cite{GirardinLequesne} and \cite{LequesneRegnault}.
+The package is structured around two functions, \code{entropy.estimate} and \code{vs.test}. The first one computes the spacing based estimator~of the differential entropy 
+\begin{equation}
+\SSS(P):=-\int_\R p(x) \log p(x) \der x
+\label{shannon}
+\end{equation}
+of a distribution $P$ on $\R$ with density $p$ from a numeric sample $X_1, \dots, X_n$ drawn from $P$. The second one performs Vasicek-Song GOF test for usual parametric families of distributions. 
+A comprehensive presentation of their usage is proposed in Sections~\ref{MEGOFPSecEntEst} and~\ref{MEGOFPSecVSTest}, with numerous examples. An application to environmental data is presented in Section~\ref{TutoAppliData}. The theoretical background attached to entropy estimation and Vasicek-Song tests is presented in the Appendix. In addition, details about entropy estimation, Vasicek-Song goodness-of-fit tests and the contents and features of the package are available in the listed references at the end of the present document. Particularly, see~\cite{GirardinLequesne} and \cite{LequesneRegnault}.
 
 
 \section{Function entropy.estimate for estimating differential entropy} \label{MEGOFPSecEntEst}
 
-
-The  function \verb+entropy.estimate+ computes the spacing based Vasicek estimator
-\begin{equation} \label{MEGOFPEqnVasiEst}
- V_{mn} :=\frac{1}{n} \sum_{i=1}^{n} \log \left( \frac{n}{2m} \left[ X_{(i+m)}-X_{(i-m)} \right] \right)
- %\label{vasicek}
-\end{equation}
-of the differential Shannon entropy of a numeric sample $X_1, \dots, X_n$, with $X_{(1)} \leq \dots \leq X_{(n)}$ denoting the order statistics of the sample and $m\in\N^*$ being a window size smaller than $n/2$. Two arguments must be provided:
+The  function \code{entropy.estimate} computes the spacing based estimate~(\ref{MEGOFPEqnVasiEst}) of Shannon entropy~(\ref{shannon}) from a numeric sample. Two arguments have to be provided:
 \begin{itemize}
- \item \verb+x+: the numeric sample;
- \item \verb+window+: an integer between 1 and half of the sample size, specifying the window size of the spacing-based estimator~(\ref{MEGOFPEqnVasiEst}).
+ \item \code{x}: the numeric sample;
+ \item \code{window}: an integer between 1 and half of the sample size, specifying the window size of the spacing-based estimator~(\ref{MEGOFPEqnVasiEst}).
 \end{itemize}
-It returns a single value which is the estimate of Shannon differential entropy of the sample. Right below is an example for a sample drawn from a normal distribution with parameters $\mu = 0$ and $\sigma^2 = 1$.
+It returns, as a single value, the estimate of Shannon entropy of the sample. Here is an example for a sample drawn from a normal distribution with parameters $\mu = 0$ and $\sigma^2 = 1$.
 
 
 <<>>=
@@ -98,34 +100,36 @@ library('vsgoftest')
 set.seed(2)	#set seed of PRNG
 samp <- rnorm(n = 100, mean = 0, sd = 1) #sampling from normal distribution
 entropy.estimate(x = samp, window = 8) #estimating entropy with window = 8
-log(2*pi*exp(1))/2 #the true value of entropy
+log(2*pi*exp(1))/2 #the exact value of entropy
 @
 
-One may wonder about the choice of the window size. Following the maximum entropy paradigm, one may choose the window size that maximizes the entropy estimate, as described by the following instructions.
+The estimate returned by \code{entropy.estimate} obviously depends on the window selected by the user, as illustrated by the following chunck.
+
+<<>>=
+sapply(1:10, function(w) entropy.estimate(x = samp, window =w))
+@
+
+One may select the window size that maximizes the entropy estimate, as follows.
 
 <<>>=
 n <- 100 #sample size
-V <- numeric(n/2 -1)
-for (i in 1:(n/2 -1)) { #make vary window size from 1 to 49
-  #compute estimate for each window
-  V[i] <- entropy.estimate(x = samp, window = i)
-}
+V <- sapply(1:(n/2 - 1), function(w) entropy.estimate(x = samp, window =w))
 which.max(V) #Choose window that maximizes entropy
 @
 
 
-Consider as a second example, a sample drawn from a Pareto distribution whose density is 
+Let us consider a sample drawn from a Pareto distribution with density
 $$p(x;c,\mu) = \frac{\mu c^\mu}{x^{\mu+1}}, \quad  x \geq c,$$
-where $c >0 $ and $\mu >0 $. The closed form expression of its Shannon entropy is 
+where $c >0 $ and $\mu >0 $, which can be obtained by making use of the function \code{rpareto} as illustrated below. Its Shannon entropy is 
 $$\SSS(p( . ;c, \mu)) = -\ln \mu + \ln c + \frac{1}{\mu} +1.$$
-Such a sample can be obtained by making use of the function \verb+rpareto+, as illustrated by the following instructions. 
+
 
 <<>>=
 set.seed(5)
 n <- 100 #Sample size
 samp <- rpareto(n, c = 1, mu = 2) #sampling from Pareto distribution
 entropy.estimate(x = samp, window = 3)
--log(2) + 3/2 #True value of entropy
+-log(2) + 3/2 #Exact value of entropy
 @
 
 
@@ -133,7 +137,7 @@ entropy.estimate(x = samp, window = 3)
 \section{Function vs.test for testing GOF to a specified model} \label{MEGOFPSecVSTest}
 
 
-The function \verb+vs.test+ performs the Vasicek-Song procedure for testing goodness-of-fit of a numerical sample to whether a prescribed distribution $P ={P}_{0}(\theta)$, the so-called simple null hypothesis test
+The function \verb+vs.test+ performs the Vasicek-Song GOF test (VS test) of a numerical sample for whether a prescribed distribution $P ={P}_{0}(\theta)$, the so-called simple null hypothesis test
 \begin{equation}\label{arthyps}
 H_{0}: P ={P}_{0}(\theta) \quad\mbox{against}\quad
 H_{1}: P \ne {P}_{0}(\theta),
@@ -143,41 +147,57 @@ or to a parametric family $\cP_{0}(\Theta)$, the so-called composite null hypoth
 H_{0}: P \in \cP_{0}(\Theta) \quad\mbox{against}\quad
 H_{1}: P \notin \cP_{0}(\Theta);
 \end{equation}
-see Appendix below for details. In its shortest call, it requires two arguments to be provided:
+see Appendix below for details. 
+Setting two non-optional arguments is required:
 \begin{itemize}
- \item \verb+x+: the numeric sample;
- \item \verb+densfun+: a character string specifying the targeted family of distributions.  Available families of distributions are: uniform, normal, log-normal, exponential, gamma, Weibull, Pareto, Fisher and Laplace distributions. They are referred to by the symbolic name in \proglang{R} of their density function. For example, set \verb+densfun = 'dnorm'+ to test GOF to the family of normal distributions.
+ \item \code{x}: the numeric sample;
+ \item \code{densfun}: a character string specifying the theoretical family of distributions of the null hypothesis.  Available families of distributions are: uniform, normal, log-normal, exponential, gamma, Weibull, Pareto, Fisher and Laplace distributions. They are referred to by the symbolic name in \proglang{R} of their density function. For example, set \code{densfun = 'dnorm'} to test GOF of the family of normal distributions.
 \end{itemize}
 
-It returns an object of class \verb+htest+, i.e., a list whose main components are:
+It returns an object of class \code{htest}, i.e., a list whose main components are:
 \begin{itemize}
- \item \verb+statistic+: the value of the VS test statistic~(\ref{PKGEqnTestStat}) of the sample, for the optimal window size, as defined in~(\ref{arteqm});
- \item \verb+parameter+: the optimal window size;
- \item \verb+estimate+: the maximum likelihood estimate of the parameters of the distribution to which the GOF is tested;
- \item \verb+p.value+: the p-value associated to the sample.
+ \item \code{statistic}: the value of VS test statistic~(\ref{PKGEqnTestStat}) for the sample, with optimal window size defined by~(\ref{arteqm});
+ \item \code{parameter}: the optimal window size;
+ \item \code{estimate}: the maximum likelihood estimate of the parameters of the null distribution;
+ \item \code{p.value}: the p-value associated to the sample.
 \end{itemize}
 
-By default, once provided the arguments \verb+x+ and \verb+densfun+, the function \verb+vs.test+ performs the composite GOF VS test to the prescribed family \verb+densfun+. Depending on the sample size, the p-value is estimated by means of Monte-Carlo methods (if the sample size is smaller than 80), or through the asymptotic distribution~(\ref{asymptoticn}) of the VS test statistic.
+By default, \code{vs.test} performs the composite VS test of the family of distributions \code{densfun} for the sample \code{x}. The p-value is estimated by means of Monte-Carlo simulations if the sample size is smaller than 80, or through the asymptotic distribution~(\ref{asymptoticn}) of the VS test statistic otherwise.
 
-
-In the following example, a normally distributed sample is simulated. Its goodness-of-fit to the family of Laplace distributions is rejected while its normality is accepted.
+In the following example, a normally distributed sample is simulated. 
+VS test rejects the null hypothesis that this sample is drawn from a Laplace distribution, but does not reject the normality hypothesis (for a significant level set to $0.05$).
 
 <<>>=
-set.seed(2)
+set.seed(5)
 samp <- rnorm(50,2,3)
 vs.test(x = samp, densfun = 'dlaplace')
 @
 
-An additional argument can be provided to perform a simple null hypothesis test. By setting \verb+param+ to a suitable numeric vector (adapted to the family of distribution given in \verb+densfun+), the function~\verb+vs.test+ performs a GOF test to the single prescribed distribution.
+<<>>=
+set.seed(4)
+vs.test(x = samp, densfun = 'dnorm')
+@
+
+For performing a simple null hypothesis GOF test, the additional argument \code{param} has to be set to a numeric vector, consistent with the parameter requirements for the null distribution.
+In such case, the MLE of the parameter(s) of the null distribution has not to be computed and hence the component \code{estimate} in results is not available.
 
 <<>>=
 set.seed(26)
 vs.test(x = samp, densfun = 'dnorm', param = c(2,3))
 @
 
-Note that when \verb+param+ is provided, the MLE of the parameter(s) of the null distribution is not computed, hence the component \verb+estimate+ of the result is not available.
+If \code{param} is not consistent with the specified distribution -- e.g., standard deviation for testing a normal distribution is missing or negative, the execution is stopped and an error message is returned.
 
-One may prefer estimating the p-value of the sample by Monte-Carlo simulations, even when sample size is larger than 80. The optional argument \verb+simulate.p.value+ has then to be turned to \verb+TRUE+ (\verb+NULL+ by default). Note that, it is also possible to choose the number of Monte-Carlo replicates by providing to the optional argument \verb+B+ a positive integer (default is \verb+B = 5000+).
+{
+  \raggedright
+<<echo = TRUE, eval = TRUE, error = TRUE>>=
+set.seed(2)
+samp <- rnorm(50, -2, 1)
+vs.test(samp, densfun = 'dnorm', param = -2)
+@
+}
+
+One can estimate the p-value of the sample by Monte-Carlo simulations, even when sample size is larger than 80, by setting the optional argument \code{simulate.p.value} to \code{TRUE} (\code{NULL} by default). The number of Monte-Carlo replicates can be fixed through  the optional argument~\code{B} (default is \code{B = 5000}).
 
 <<>>=
 set.seed(1)
@@ -190,14 +210,16 @@ set.seed(2)
 vs.test(samp, densfun = 'dexp', simulate.p.value = TRUE, B = 10000)
 @
 
-Whether \verb+simulate.p.value+ is turned to \verb+TRUE+ or not, Vasicek estimates $V_{mn}$ are computed for all $m$ from $1$ to $n^{1/3-\delta}$, where $\delta < 1/3$; hence the test statistic is $I_{\widehat{m}n}$, given by~(\ref{PKGEqnTestStat}) for $\widehat{m}$ the optimal window size, as defined in~(\ref{arteqm}).
-The choice of $\delta$ depends on the family the goodness-of-fit is tested to. Precisely, for Weibull, Pareto, Fisher, Laplace and Beta families, $\delta$ is set to $2/15$ while for uniform, normal, log-normal, exponential and gamma families, it is set to $1/12$. These default settings result from numerous experimentations. Still, if needed, the user can tune this parameter by providing a numeric value to the optional argument \verb+delta+.
+
+Vasicek's estimates $V_{mn}$ are computed for all $m$ from $1$ to $n^{1/3-\delta}$, where $\delta < 1/3$; the test statistic is $I_{\widehat{m}n}$ for $\widehat{m}$ the optimal window size, as defined in~(\ref{arteqm}).
+The choice of $\delta$ depends on the family of distributions of the null hypothesis. Precisely, for Weibull, Pareto, Fisher, Laplace and Beta, $\delta$ is set by default to $2/15$, while for uniform, normal, log-normal, exponential and gamma, it is set to $1/12$. These default settings result from numerous experimentations. Still, the user can choose another value through the optional argument \code{delta}.
 
 <<>>=
+set.seed(63)
 vs.test(samp, densfun = 'dexp', delta = 5/30)
 @
 
-In addition, when estimating the p-value by means of Monte-Carlo simulations, upper-bounding the window size by $n^{1/3-\delta}$ is not necessary (it is a necessary requirement only for using the asymptotic normality of $I_{mn}$ and hence for computing asymptotic p-values from~(\ref{asymptoticn})). This upper-bound can be relaxed so that $m$ ranges from $1$ to $n/2$ by adding \verb+extend = TRUE+. The interests are multiple. First, enlarging the range for $m$ may lead to a most reliable test, as illustrated below.
+Note that upper-bounding the window size by $n^{1/3-\delta}$ is only required when the asymptotic normality of $I_{mn}$ is used to compute asymptotic p-values from~(\ref{asymptoticn}). When the p-value are computed by means of Monte-Carlo simulation, this upper-bound can be extended to $n/2$ by adding \code{extend = TRUE}, which may lead to a more reliable test, as illustrated below.
 
 <<>>=
 set.seed(8)
@@ -209,8 +231,7 @@ vs.test(x = samp, densfun = "dlnorm")
 vs.test(x = samp, densfun = "dlnorm", extend = TRUE)
 @
 
-Second, enlarging the range for $m$  is also interesting when the sample size is moderate, especially if ties are present. Indeed, the presence of ties is particularly non-appropriate for performing VS tests: if ties are present, it may happen that some spacings $X_{(i+m)} - X_{(i-m)}$ vanish and hence Vasicek estimate is not well-defined. From a computational view point, it requires the window size $m$ to be greater than the maximal number of ties in the sample. Hence, if the upper-bound $n^{1/3-\delta}$ is less than the maximal number of ties, the test statistic can not be computed. 
-Turning \verb+extend+ to \verb+TRUE+ may avoid this behaviour, as illustrated below.
+Enlarging the range of $m$  is also pertinent if ties are present in the sample. Indeed, the presence of ties is particularly inappropriate for performing VS tests, because some spacings $X_{(i+m)} - X_{(i-m)}$ can be zero. The window size $m$ has thus to be greater than the maximal number of ties in the sample. Hence, if the upper-bound $n^{1/3-\delta}$ is less than the maximal number of ties, the test statistic can not be computed. Setting \code{extend} to \code{TRUE} can avoid this behavior, as illustrated below.
 
 {
   \raggedright
@@ -226,25 +247,21 @@ vs.test(x = samp, densfun = "dexp")
 vs.test(x = samp, densfun = "dexp", extend = TRUE)
 @
 }
-Finally, it may happen that for all $m$ between $1$ and $n^{1/3-\delta}$, Vasicek's estimate $V_{mn}$ exceeds the parametric estimate of the entropy of the null distribution, hence no window size exists satisfying~(\ref{arteqm}), as illustrated below.
 
-<<echo = TRUE, eval = FALSE>>=
+Finally, Vasicek's estimate $V_{mn}$ may exceed the parametric estimate of the entropy of the null distribution for all $m$ between $1$ and $n^{1/3-\delta}$. Then, no window size exists satisfying~(\ref{arteqm}), as illustrated below.
+
+{
+  \raggedright
+<<echo = TRUE, eval = TRUE, error = TRUE>>=
 set.seed(84)
 ech <- rpareto(20, mu = 1/2, c = 1)
 vs.test(x = ech, densfun = 'dpareto', param = c(1/2, 1))
 @
+}
 
-<<echo = FALSE, eval = TRUE>>=
-set.seed(84)
-ech <- rpareto(20, mu = 1/2, c = 1)
-try(vs.test(x = ech, densfun = 'dpareto', param = c(1/2, 1)))
-@
+Enlarging the possible window sizes by setting \code{extend} to \code{TRUE} may enable Vasicek estimates to be smaller than empirical entropy.
 
-By turning \verb+extend+ to \verb+TRUE+, the possible values for the window size is enlarged, possibly enabling the existence of Vasicek estimates smaller than empirical entropy. 
-% The following example illustrates this behaviour.
-
-
-Note that when estimating the p-value by Monte-Carlo methods, it may happen that for some replicates, the constraint~(\ref{PKGEqnConstraint}) is not satisfied whatever be the window size. These replicates are then ignored and the p-value is computed from remaining replicates. A warning message is added to the output, informing the user on the number of ignored replicates.
+Note that when computing the p-value by Monte-Carlo simulation, the constraint~(\ref{PKGEqnConstraint}) may not be satisfied for some replicates, whatever be the window size. These replicates are then ignored and the p-value is computed from the remaining replicates. A warning message is added to the output, informing on the number of ignored replicates.
 
 {
   \raggedright
@@ -255,63 +272,72 @@ vs.test(x = aluminium2, densfun = 'dpareto')
 @
 }
 
-A large proportion of such ignored replicates may indicate that the original sample is too small or obviously does not fit the null distribution.
+A large proportion of such ignored replicates may indicate that the original sample is too small or the null distribution does not fit it.
+
+
 
 \section{Application to real data} \label{TutoAppliData}
 
-This Section is devoted to the application to real data of Vasicek-Song GOF tests. The package~\pkg{vs.test} provides environmental data originating from a guidance report edited by the Technology Support Center of the United States Environmental Protection Agency; see~\cite{singh}. According to~\cite{singh}, environmental scientists may have to take remediation decisions at suspected sites based on organic and inorganic contaminant concentration measurements. From a statistical point of view, these decisions are usually derived from the computation of confidence upper bounds for contaminant concentrations. Testing the goodness-of-fit of the distribution of data to specified models hence appears of prior importance. \cite{singh} also point out that contaminant concentration data from sites quite often appear to follow a skewed probability distribution, making the log-normal family a frequently-used model. They illustrate their purpose by applying Shapiro-Wilk test to the log-transformed of the samples \verb+aluminium1+, \verb+manganese+, \verb+aluminium2+ and \verb+toluene+ (stored into the present package)\footnote{A succinct description of these data is available by evaluating the following \proglang{R} command: ?contaminants}.
+The \pkg{vs.test} package contains environmental data originating from a guidance report edited by the Technology Support Center of the United States Environmental Protection Agency; see~\cite{singh}. According to~\cite{singh}, environmental scientists take remediation decisions at suspected sites based on organic and inorganic contaminant concentration measurements. These decisions usually derive from the computation of confidence upper bounds for contaminant concentrations. Testing the goodness-of-fit of specified models hence appears of prior interest. \cite{singh} also points out that contaminant concentration data from sites often appear to follow a skewed probability distribution, making the log-normal family a frequently-used model. The authors illustrate their purpose by applying Shapiro-Wilk test to the log-transformed of the samples \code{aluminium1}, \code{manganese}, \code{aluminium2} and \code{toluene} (stored in the present package)\footnote{A succinct description of these data is available by executing the following \proglang{R} command: \code{?contaminants}}; see the empirical skewness computed in the following chunk.
 
-The following code chunks intend to illustrate the applicability and behaviour of the function \verb+vs.test+ on these environmental data. The significant level is fixed to $0.1$ as in \cite{singh}. Note that, because the four samples are small (at most 23 observations), all p-values presented below are estimated by means of Monte-Carlo methods. Note also that warning messages notifying that there are ties in the samples have been dropped out from outputs.
+<<>>=
+data(contaminants) #Load environmental data from package
+#Package DescTools required for this chunk
+unlist(lapply(X = list(aluminium1, manganese, aluminium2, toluene),
+       FUN = DescTools::Skew))
+@
 
-<<warning = FALSE>>=
+The following code chunks intend to illustrate the use and behaviour of the function \code{vs.test} for these environmental data. The significant level is fixed to $0.1$ as in \cite{singh}. 
+Note that warning messages notifying that there are ties in the samples have been dropped out from outputs.
+
+<<echo = FALSE>>=
+knitr::opts_chunk$set(warning = FALSE)
+@
+
+
+<<>>=
 set.seed(1)
 vs.test(x = aluminium1, densfun = 'dlnorm')
 @
 
-The log-normality hypothesis is accepted for \verb+aluminium1+. Similar results are obtained for \verb+manganese+. Log-normality is rejected for \verb+aluminium2+.
+The log-normal hypothesis is not rejected for \code{aluminium1}. Similar results are obtained for \code{manganese}. Log-normality is rejected for \code{aluminium2}.
 
-<<warning = FALSE>>=
+<<>>=
 set.seed(1)
 vs.test(x = aluminium2, densfun = 'dlnorm')
 @
 
-Due to numerous ties in \verb+toluene+, \verb+vs.test+ can not compute Vasicek entropy estimate unless \verb+extend+ is turned to \verb+TRUE+. Still, \verb+vs.test+ notifies that the constraint~(\ref{PKGEqnConstraint}) is violated for all window sizes, which suggests that data are not likely to be drawn from log-normal distribution. Turning \verb+relax+ to \verb+TRUE+ yields the following result.
+Due to numerous ties in \code{toluene}, \code{vs.test} can not compute Vasicek entropy estimate unless \code{extend} is set to \code{TRUE}. Still, \code{vs.test} notifies that the constraint~(\ref{PKGEqnConstraint}) is violated for all window sizes, which suggests that data are not likely to be drawn from the log-normal distribution; see Section~\ref{MEGOFPSecFramework}.
+Turning \code{relax} to \code{TRUE} yields the following result.
 
-<<warning = FALSE>>=
+<<>>=
 set.seed(1)
 vs.test(x = toluene, densfun = 'dlnorm', extend = TRUE, relax = TRUE)
 @
 
-Still, this last result looks spurious as the test statistic is negative (resulting from the constraint~(\ref{PKGEqnConstraint}) to be disabled by \verb+relax = TRUE+). Alternatively, it is possible to test normality of the log-transformed sample as follows.
+Again, this last result looks spurious because the test statistic is negative -- resulting from (\ref{PKGEqnConstraint}) not being satisfied by setting \code{relax = TRUE}. An alternative is to test normality of the log-transformed sample as follows.
 
-<<warning = FALSE>>=
+<<>>=
 set.seed(1)
 vs.test(x = log(toluene), densfun ='dnorm', extend = TRUE)
 @
 
-In summary, log-normality is accepted for \verb+aluminium1+ and \verb+manganese+ while it is rejected for \verb+aluminium2+ and \verb+toluene+. These results are consistent with those obtained by \cite{singh}. To go a step further, the goodness-of-fit to Pareto distribution family can also be performed for \verb+aluminium2+ and \verb+toluene+. Log-normal and  Pareto distributions have historically competed with sometimes closely related generating processes and hard-to-distinguish tail properties. Goodness-of-fit of \verb+aluminium2+ to Pareto distribution family is rejected.
+The log-normal hypothesis is not rejected for \code{aluminium1} and \code{manganese} while it is rejected for \code{aluminium2} and \code{toluene}. These results are consistent with those obtained by \cite{singh}. Further, the goodness-of-fit to the Pareto distributionsis performed for \code{aluminium2} and \code{toluene}. Log-normal and  Pareto distributions usually compete with closely related generating processes and hard to distinguish tail properties. Goodness-of-fit of Pareto distribution is rejected for \code{aluminium2}.
 
-<<warning = FALSE>>=
+<<>>=
 set.seed(1)
 vs.test(x = aluminium2, densfun = 'dpareto')
 @
 
-Applying \verb+vs.test+ to \verb+toluene+ with default settings does not yield any result because of numerous ties and the constraint~(\ref{PKGEqnConstraint}) being violated.
-Again, turning \verb+extend+ and \verb+relax+ to \verb+TRUE+ yields the following spurious result.
+Applying \code{vs.test} to \code{toluene} with default settings yields no result because of numerous ties and the violation of~(\ref{PKGEqnConstraint}).
+Uniformity of the sample transformed by the cumulative density function of the Pareto distribution can be tested as follows. Goodness-of-fit  of the Pareto distribution is not rejected for \code{toluene}.
 
-<<warning = FALSE>>=
-set.seed(12)
-vs.test(x = toluene, densfun = 'dpareto', extend = TRUE, relax = TRUE)
-@
-
-Finally, it is possible to test uniformity of the sample transformed by the cumulative density function of the Pareto distribution, as follows, yielding to accept the goodness-of-fit of \verb+toluene+ to the Pareto distribution family.
-
-<<warning = FALSE>>=
-#First, compute the MLE of parameters of Pareto dist.
+<<>>=
+#Compute the MLE of parameters of Pareto dist.
 res.test <- vs.test(x = toluene,
                     densfun = 'dpareto',
                     extend = TRUE, relax = TRUE)
-#Then, test uniformity of transformed data
+#Test uniformity of transformed data
 set.seed(5)
 vs.test(x = ppareto(toluene,
                     mu = res.test$estimate[1],
@@ -319,13 +345,18 @@ vs.test(x = ppareto(toluene,
         densfun ='dunif', param = c(0,1), extend = TRUE)
 @
 
-\section*{Appendix: Vasicek-Song tests, theoretical background}
+\section*{Appendix: Vasicek-Song tests, theoretical background} \label{SecTheorBackgr}
 
 \cite{song} proposes a goodness-of-fit test based on Kullback-Leibler divergence for either simple (\ref{arthyps}) or composite (\ref{arthyp}) null hypotheses. Precisely, the test statistic $I_{mn}$ is an estimator of the Kullback-Leibler divergence $\KK(P|P_0(\theta)) = -\SSS(P) - \int p_0(x;\theta) p(x) \der x$ of the sampled distribution $P$, with respect to the null distribution $P_0(\theta)$ (with respective densities $p$ and $p_0(.;\theta)$) in case of a simple hypothesis or some estimate $P_0(\widehat{\theta}_n)$ otherwise:
 \begin{equation} \label{artqimn}
  I_{mn} := -V_{mn}-\frac{1}{n} \sum_{i=1}^{n} \log p_{0}(X_{i},{\widehat{\theta}}_{n}),
 \end{equation}
-where $V_{mn}$, given by~(\ref{MEGOFPEqnVasiEst}), estimates $\SSS(P)$ while $- \frac{1}{n}\sum_{i=1}^{n} \log p_{0}(X_{i},{\widehat{\theta}}_{n})$ estimates $-\int_{\R} \log p_0(x;\theta) p(x) \der x$. For the test~(\ref{arthyps}) with simple null hypothesis, set $\widehat{\theta}_n = \theta$, where $\theta$ is the null parameter. 
+where
+\begin{equation} \label{MEGOFPEqnVasiEst}
+ V_{mn} :=\frac{1}{n} \sum_{i=1}^{n} \log \left( \frac{n}{2m} \left[ X_{(i+m)}-X_{(i-m)} \right] \right)
+ %\label{vasicek}
+\end{equation}
+estimates $\SSS(P)$ while $- \frac{1}{n}\sum_{i=1}^{n} \log p_{0}(X_{i},{\widehat{\theta}}_{n})$ estimates $-\int_{\R} \log p_0(x;\theta) p(x) \der x$. For the test~(\ref{arthyps}) with simple null hypothesis, set $\widehat{\theta}_n = \theta$, where $\theta$ is the null parameter. 
 Otherwise, $\widehat{\theta}_n$ is the maximum likelihood estimator (MLE) of $\theta$, i.e., it satisfies 
 $$\frac{1}{n}\sum_{i=1}^n \log p_{0}(X_{i},{\widehat{\theta}}_{n}) = \max_{\theta \in \Theta} \frac{1}{n} \sum_{i=1}^{n} \log p_{0}(X_{i},\theta).$$
 

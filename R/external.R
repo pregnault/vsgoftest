@@ -122,7 +122,7 @@ entropy.estimate <- function(x,window){
   n <- length(x) #sample length
   TIES=FALSE
   if ((length(unique(x)) < n)){
-    warning('Ties should not be present for Vasicek test')
+    warning('Ties hinder Vasicek-Song test')
     TIES=TRUE
   }
     xord <- sort(x) #ordered statistics
@@ -138,7 +138,7 @@ entropy.estimate <- function(x,window){
   else{
     NTmax=max(table(x))
     if(m < NTmax) #if bound is too small and there are too many ties, impossible to compute Vasicek estimate.
-    {stop('Too many ties to compute Vasicek estimate.')
+    {stop('Too many ties for computing Vasicek estimate.')
     }
     else{
       A[1:m] <- log(n*(xord[1:m+m]-xord[1])/(2*m))
@@ -203,7 +203,7 @@ vs.test <- function(x, densfun, param = NULL, simulate.p.value = NULL, B = 5000,
                    "dlaplace"=(length(ESTIM)!=2)|(ESTIM[2]<=0),
 		               "dbeta"=(length(ESTIM)!=2)|(ESTIM[1]<=0)|(ESTIM[2]<=0)
     )
-    if (Cond) stop("\"param\": invalid parameter (not compatible with the specified distribution)")
+    if (Cond) stop("\"param\": invalid parameter (not consistent with the specified distribution)")
     else {}
   }
   names(ESTIM) <- switch(densfun,
@@ -256,16 +256,16 @@ vs.test <- function(x, densfun, param = NULL, simulate.p.value = NULL, B = 5000,
   ### END CHECKING 
   DNAME <- deparse(substitute(x))
   NVALUE <- switch(densfun,
-                   'dunif'='uniform distribution',
-		               'dnorm'='normal distribution',
-		               'dlnorm'='log-normal distribution',
-                   'dexp'='exponential distribution',
-                   'dgamma'='gamma distribution',
-                   'dweibull'='Weibull distribution',
-                   'dpareto'='Pareto distribution',
-                   'df'='Fisher distribution',
-                   'dlaplace'='Laplace distribution',
-		               'dbeta'='Beta distribution')
+                   'dunif'='the uniform distribution',
+		               'dnorm'='the normal distribution',
+		               'dlnorm'='the log-normal distribution',
+                   'dexp'='the exponential distribution',
+                   'dgamma'='the gamma distribution',
+                   'dweibull'='the Weibull distribution',
+                   'dpareto'='the Pareto distribution',
+                   'df'='the Fisher distribution',
+                   'dlaplace'='the Laplace distribution',
+		               'dbeta'='the Beta distribution')
   names(NVALUE) <- 'Distribution under null hypothesis'
   resVE <- vs.estimate(x, densfun, ESTIM, extend, delta, relax)
   STAT <- -resVE$estimate - mean(log(likelihood(x, densfun, ESTIM)))
@@ -276,7 +276,7 @@ vs.test <- function(x, densfun, param = NULL, simulate.p.value = NULL, B = 5000,
     if (simulate.p.value){
     dist <- suppressWarnings(simulate.vs.dist(n, densfun, ESTIM, B, extend, delta, relax))
     if (any(is.na(dist))) {
-      warning(paste('For', sum(is.na(dist)), 'simulations (over', B, '), entropy estimate is greater than empirical maximum entropy for all window size'))
+      warning(paste('For', sum(is.na(dist)), 'simulations (over', B, '), entropy estimate is greater than empirical maximum entropy for all window sizes.'))
     }
     PVAL <- mean(dist>STAT, na.rm = TRUE)
     if (is.nan(PVAL)) { #It happens when all components of dist are NA.
@@ -289,13 +289,13 @@ vs.test <- function(x, densfun, param = NULL, simulate.p.value = NULL, B = 5000,
   }
   names(PVAL) <- 'p-value'
   if (is.null(param)) {
-    METHOD <- paste("Vasicek-Song GOF test to",NVALUE, 'family', sep=' ')
+    METHOD <- paste("Vasicek-Song GOF test for",NVALUE, sep=' ')
     
     structure(list(statistic=STAT, null.value=NVALUE, parameter=PARAM, estimate=ESTIM,
                    p.value=PVAL, method=METHOD, data.name=DNAME, observed=x), class="htest")
   }
   else{
-    METHOD <- paste("Vasicek-Song GOF test to",NVALUE, paste('with ', myprint(names(ESTIM), param), sep=''), 
+    METHOD <- paste("Vasicek-Song GOF test for",NVALUE, paste('with ', myprint(names(ESTIM), param), sep=''), 
                     sep=' ')
     structure(list(statistic=STAT, null.value=NVALUE, parameter=PARAM, 
                    p.value=PVAL, method=METHOD, data.name=DNAME, observed=x), class="htest")

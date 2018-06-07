@@ -15,7 +15,9 @@ library(goftest)
 
 #### vsgoftest versus dbEmpLikeGOF ####
 
-## For normal distribution
+## Comparison of computation times ##
+
+# For normal distribution
 set.seed(1)
 bm <- microbenchmark(vs.test = vs.test(x = (sample <- rnorm(n = 50)), densfun = 'dnorm', 
                                        simulate.p.value = TRUE, B = 1000, delta = -1/6),
@@ -47,7 +49,7 @@ bm %>%
   theme(text = element_text(size = 18))
 # dev.off()
 
-## For uniform distribution
+# For uniform distribution
 set.seed(1)
 bm <- microbenchmark(vs.test = vs.test(x = (sample <- runif(n = 50, min = 1, max = 3)), densfun = 'dunif', 
                                        simulate.p.value = TRUE, B = 1000, delta = -1/6),
@@ -78,6 +80,48 @@ bm %>%
   labs(x = '', y = 'Computation time (ms)') +
   theme(text = element_text(size = 18))
 # dev.off()
+
+## Power comparison when applied to heavy tailed samples ##
+
+##With moderate sample size (n = 50)
+
+#For laplace samples
+tmp <- function(n=50) {
+  samp <- rlaplace(n, mu=0, b= 1)
+  pvs <- vs.test(x = samp, densfun = "dnorm")$p.value
+  pelr <- dbEmpLikeGOF(x = samp, testcall = "normal", vrb = FALSE)$pvalue
+  return(c(VS = pvs, ELR = pelr))
+}
+
+set.seed(seed = 3)
+res <- replicate(n = 1000, expr = tmp(50))
+apply(res < 0.05, 1, mean)
+
+#For student samples
+tmp2 <- function(n = 50) {
+  samp <- rt(n, df = 4, ncp = 0)
+  pvs <- vs.test(x = samp, densfun = "dnorm")$p.value
+  pelr <- dbEmpLikeGOF(x = samp, testcall = "normal", vrb = FALSE)$pvalue
+  return(c(VS = pvs, ELR = pelr))
+}
+
+set.seed(seed = 4)
+res2 <- replicate(n = 1000, expr = tmp2(50))
+apply(res2 < 0.05, 1, mean)
+
+
+##With large samples (n = 200)
+
+#Laplace
+set.seed(seed = 5)
+res3 <- replicate(n = 1000, expr = tmp(200))
+apply(res3 < 0.05, 1, mean)
+
+#Student
+set.seed(seed = 6)
+res4 <- replicate(n = 1000, expr = tmp2(200))
+apply(res4 < 0.05, 1, mean)
+
 
 
 #### Power comparisons ####
