@@ -45,22 +45,22 @@ Vasicek, O., A test for normality based on sample entropy, \emph{Journal of the 
 
 Song, K. S., Goodness-of-fit tests based on Kullback-Leibler discrimination information, \emph{Information Theory, IEEE Transactions on,} \bold{48(5)}, 1103-1117 (2002).
 
-Girardin, V., Lequesne, J. Entropy-based goodness-of-fit tests - a unifying framework. Application to DNA replication. \emph{Communications in Statistics: Theory and Methods,} \bold{} (2017). 
+Girardin, V., Lequesne, J. Entropy-based goodness-of-fit tests - a unifying framework. Application to DNA replication. \emph{Communications in Statistics: Theory and Methods} (2017). https://doi.org/10.1080/03610926.2017.1401084
 
-Lequesne, J., Regnault, P. Package vsgoftest for R: goodness-of-fit tests based on Kullback-Leibler divergence. \emph{Arxiv:} (2018).
+Lequesne, J., Regnault, P. vsgoftest: An R Package for Goodness-of-Fit Testing Based on Kullback-Leibler Divergence. \emph{hal-01816063} (2018). 
 
 }
 \author{
 J. Lequesne \email{justine.lequesne@unicaen.fr}
 }
 
-\seealso{\code{\link{entropy.estimate}} which computes the Vasicek estimator of Shannon entropy; \code{\link[dbEmpLikeGOF]{dbEmpLikeGOF}} which peforms density based empirical likelihoog goodness-of-fit tests for normality and uniformity.}
+\seealso{\code{\link{entropy.estimate}} which computes the Vasicek estimator of Shannon entropy.}
 
 \examples{
 set.seed(1)
 samp <- rnorm(50,2,3)
-vs.test(x = samp, densfun = 'dnorm', param = c(2,3), B = 5000) #Simple null hypothesis
-vs.test(x = samp, densfun='dnorm') #Composite null hypothesis
+vs.test(x = samp, densfun = 'dnorm', param = c(2,3), B = 500) #Simple null hypothesis
+vs.test(x = samp, densfun='dnorm', B = 500) #Composite null hypothesis
 ## Using asymptotic distribution to compute the p-value
 vs.test(x = samp, densfun='dnorm', simulate.p.value = FALSE) #Composite null hypothesis
 

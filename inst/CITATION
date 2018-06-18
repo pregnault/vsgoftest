@@ -1,13 +1,13 @@
 bibentry(bibtype = "Article",
-  title        ="Package vsgoftest for {R}: goodness-of-fit tests based on Kullback-Leibler divergence",
+  title        ="vsgoftest: An {R} Package for Goodness-of-Fit Testing Based on {K}ullback-{L}eibler Divergence",
   author       = c(person("Justine", "Lequesne"),
                    person("Philippe", "Regnault")),
-  journal      = "Arxiv preprint",
+  journal      = "HAL preprint",
   year         = "2018",
-  url          = "http://arxiv.org/",
+  url          = "https://hal.archives-ouvertes.fr/hal-01816063",
   textVersion  =
   paste("Justine Lequesne, Philippe Regnault (2018).",
-        "Package vsgoftest for {R}: goodness-of-fit tests based on Kullback-Leibler divergence",
-        "URL http://arxiv.org/.")
+        "vsgoftest: An {R} Package for Goodness-of-Fit Testing Based on {K}ullback-{L}eibler Divergence",
+        "URL https://hal.archives-ouvertes.fr/hal-01816063")
 )
 
