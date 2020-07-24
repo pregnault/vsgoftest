@@ -239,13 +239,13 @@ vs.test <- function(x, densfun, param = NULL, simulate.p.value = NULL, B = 5000,
   }
   if (is.numeric(delta)) {
     if (delta >= 1/3){
-      warning('Argument delta must be a numeric value. Reset to default value.')
+      warning('Argument delta must be a numeric value. Reset to default value.') #Bug
       delta <- NULL
     }
   }
   #extend
   if (!is.logical(extend) | ! length(extend) == 1){
-    warning('Argument relax must be a logical value (TRUE or FALSE). Reset to default value.')
+    warning('Argument extend must be a logical value (TRUE or FALSE). Reset to default value.')
     extend <- FALSE
   }
   #relax
