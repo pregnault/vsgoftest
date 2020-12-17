@@ -1,13 +1,18 @@
 bibentry(bibtype = "Article",
-  title        ="vsgoftest: An {R} Package for Goodness-of-Fit Testing Based on {K}ullback-{L}eibler Divergence",
-  author       = c(person("Justine", "Lequesne"),
-                   person("Philippe", "Regnault")),
-  journal      = "arXiv preprint",
-  year         = "2018",
-  url          = "https://arxiv.org/abs/1806.07244",
-  textVersion  =
-  paste("Justine Lequesne, Philippe Regnault (2018).",
-        "vsgoftest: An {R} Package for Goodness-of-Fit Testing Based on {K}ullback-{L}eibler Divergence",
-        "URL https://arxiv.org/abs/1806.07244")
+  title        = "{vsgoftest}: An {R} Package for Goodness-of-Fit Testing Based on {K}ullback-{L}eibler Divergence",
+  author       = c(person(given = "Justine",
+                          family = "Lequesne",
+                          email = "justine.lequesne@chb.unicancer.fr"),
+                   person(given = "Philippe",
+                          family = "Regnault",
+                          email = "philippe.regnault@univ-reims.fr")),
+  journal      = "Journal of Statistical Software, Code Snippets",
+  year         = "2020",
+  volume       = "96",
+  number       = "1",
+  pages        = "1--26",
+  doi          = "10.18637/jss.v096.c01",
+
+  header       = "To cite vsgoftest in publications use:"
 )
 

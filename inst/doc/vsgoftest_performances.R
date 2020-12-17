@@ -19,7 +19,8 @@ library(goftest)
 
 # For normal distribution
 set.seed(1)
-bm <- microbenchmark(vs.test = vs.test(x = (sample <- rnorm(n = 50)), densfun = 'dnorm', 
+sample <- rnorm(n = 50)
+bm <- microbenchmark(vs.test = vs.test(x = sample, densfun = 'dnorm', 
                                        simulate.p.value = TRUE, B = 1000, delta = -1/6),
                      dbEmpLikeGOF = dbEmpLikeGOF(x = sample, testcall = "normal", 
                                                  pvl.Table = FALSE, num.mc = 1000, vrb = FALSE),
@@ -42,7 +43,7 @@ bm %>%
   ggplot(mapping = aes(x = expr, y = time/10^6)) +
   geom_violin() +
   coord_flip() +
-  stat_summary(fun.y = "median", geom = "errorbar", 
+  stat_summary(fun = "median", geom = "errorbar", 
                mapping = aes(ymax = ..y.., ymin = ..y..),
                linetype = "dashed", col = 'red', show.legend = TRUE) +
   labs(x = '', y = 'Computation time (ms)') +
@@ -51,7 +52,8 @@ bm %>%
 
 # For uniform distribution
 set.seed(1)
-bm <- microbenchmark(vs.test = vs.test(x = (sample <- runif(n = 50, min = 1, max = 3)), densfun = 'dunif', 
+sample <- runif(n = 50, min = 1, max = 3)
+bm <- microbenchmark(vs.test = vs.test(x = sample, densfun = 'dunif', 
                                        simulate.p.value = TRUE, B = 1000, delta = -1/6),
                      dbEmpLikeGOF = dbEmpLikeGOF(x = sample, testcall = "uniform",  
                                                  pvl.Table = FALSE, num.mc = 1000, vrb = FALSE),
